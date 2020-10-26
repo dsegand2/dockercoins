@@ -68,6 +68,7 @@ jobs:
           set -x
           docker build -t test --no-cache webui/
           docker network create test
+          docker run --network test --name redis-svc -d redis
           docker run --network test --name test -d test
           while true
             do
@@ -86,21 +87,22 @@ jobs:
               sleep 10
               curl localhost:8080 | grep "index.html" && break
             done
-          docker rm -f test
+          docker rm -f test redis-svc
           docker network rm test       
       - 
         name: worker
         run: |
           set -x
           docker build -t test --no-cache worker/
-          docker network create test
+          docker network create test 
+          docker run --network test --name redis-svc -d redis
           docker run --network test --name test -d test
           while true
             do
               sleep 10
               docker exec test ps | grep python && break
             done
-          docker rm -f test
+          docker rm -f test redis-svc
           docker network rm test   
      
   
