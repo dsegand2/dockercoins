@@ -18,4 +18,15 @@ spec:
           ports: 
             -
               containerPort: 6379
+          volumeMounts:
+            -
+              mountPath: /data
+              name: redis
+      volumes:
+        -
+          name: redis
+          persistentVolumeClaim:
+            claimName: redis
+      
+              
       
