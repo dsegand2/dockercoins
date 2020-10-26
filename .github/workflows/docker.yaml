@@ -2,7 +2,7 @@ name: docker
 on: 
   push:
     branches:
-      - ops
+      - v1.1
 jobs:
   test:
     runs-on: ubuntu-18.04
