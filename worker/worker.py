@@ -9,6 +9,7 @@ DEBUG = os.environ.get("DEBUG", "").lower().startswith("y")
 LENGTH = os.environ.get("LENGTH", "32")
 RNG = os.environ.get("RNG", "rng-svc").lower()
 HASHER = os.environ.get("HASHER", "hasher-svc").lower()
+PORT = os.environ.get("PORT", "80")
 
 log = logging.getLogger(__name__)
 if DEBUG:
@@ -27,7 +28,7 @@ def get_random_bytes():
 
 
 def hash_bytes(data):
-    r = requests.post("http://" + HASHER + "/",
+    r = requests.post("http://" + HASHER + ":" + PORT + "/",
                       data=data,
                       headers={"Content-Type": "application/octet-stream"})
     hex_hash = r.text
