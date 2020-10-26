@@ -72,26 +72,35 @@ jobs:
           while true
             do
               sleep 10
-              docker exec test ps | grep python && break
+              docker exec test ps | grep node && break
             done
           while true
             do
               sleep 10
-              docker exec test netstat -patan | grep 8080.*LISTEN.*python && break
+              docker ps | grep node.*8080.*test && break
             done
           docker rm -f test
           docker run --network test --name test -d -p 8080:8080 test
           while true
             do
               sleep 10
-              curl localhost:8080 | grep "RNG running on" && break
+              curl localhost:8080 | grep "index.html" && break
             done
           docker rm -f test
           docker network rm test       
       - 
-        name:
-        run:
-      - 
-        name:
-        run:        
+        name: worker
+        run: |
+          set -x
+          docker build -t test --no-cache worker/
+          docker network create test
+          docker run --network test --name test -d test
+          while true
+            do
+              sleep 10
+              docker exec test ps | grep python && break
+            done
+          docker rm -f test
+          docker network rm test   
+     
   
