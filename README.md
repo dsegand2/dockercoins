@@ -1,5 +1,5 @@
 # dockercoins
-![docker](https://github.com/openshift-academia-online/dockercoins/workflows/docker/badge.svg?branch=dev)
+![docker](https://github.com/openshift-academia-online/dockercoins/workflows/docker/badge.svg?branch=v1.0)
 
 This is the demo application originally used in Jérôme Petazzoni's [orchestration workshop](https://github.com/jpetazzo/container.training).
 
