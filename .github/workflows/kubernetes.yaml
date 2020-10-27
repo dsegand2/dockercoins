@@ -33,9 +33,9 @@ jobs:
           master=$( kubectl get node | grep master | awk '{ print $1 }' )
           kubectl taint node $master node-role.kubernetes.io/master:NoSchedule-
 
-          for microservice in hasher redis rng webui worker
+          for image in hasher rng webui worker
             do
-              docker build -t openshiftacademiaonline/dockercoins-dev:1.2-$microservice --no-cache $microservice/
+              docker build -t openshiftacademiaonline/dockercoins-dev:1.2-$image --no-cache $image/
             done
           docker image ls | grep dockercoins              
           
