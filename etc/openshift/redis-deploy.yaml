@@ -13,7 +13,7 @@ spec:
     spec:
       containers: 
         -
-          image: redis:latest
+          image: redis:6.0.8-alpine@sha256:ee1dd9d560836485dbee7b863cd52307b09c6a2e351bf8c23cface356508e9b1
           name: redis
           ports: 
             -
