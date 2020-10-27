@@ -13,7 +13,7 @@ spec:
     spec:
       containers: 
         -
-          image: openshiftacademiaonline/dockercoins-ops:hasher-latest
+          image: openshiftacademiaonline/dockercoins-ops:hasher-1.3
           name: ruby
           ports: 
             -

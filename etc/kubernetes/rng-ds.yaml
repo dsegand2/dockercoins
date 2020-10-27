@@ -13,7 +13,7 @@ spec:
     spec:
       containers: 
         -
-          image: openshiftacademiaonline/dockercoins-ops:rng-latest
+          image: openshiftacademiaonline/dockercoins-ops:rng-1.3
           name: python
           ports: 
             -
