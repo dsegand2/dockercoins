@@ -2,7 +2,7 @@ name: kubernetes
 on:
   push:
     branches:
-      - ops
+      - v1.3
 jobs:
   kubernetes: 
     env:
