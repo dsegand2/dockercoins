@@ -16,14 +16,17 @@ jobs:
         set -x
         
         project=$(basename $GITHUB_REPOSITORY)
-        compose=etc/docker/$mode/$project.yaml
+        compose=etc/$mode/$project.yaml
         date=$(date +%s)
 
-        docker build -t $GITHUB_REPOSITORY:$mode-$date --no-cache .
+        for image in hasher rng webui worker
+          do
+            docker build -t openshiftacademiaonline/dockercoins-dev:latest-$image --no-cache $image/
+          done
+        docker image ls | grep dockercoins              
 
         docker swarm init
 
-        sed -i s/latest/$mode-$date/ $compose
         sed -i s/worker/manager/ $compose
         docker stack deploy -c $compose $project
         
