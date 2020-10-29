@@ -7,7 +7,9 @@ spec:
     matchLabels: 
       app: hasher
   template:
-    metadata: 
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: 'true'
       labels: 
         app: hasher
     spec:
