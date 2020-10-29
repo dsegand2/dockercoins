@@ -7,7 +7,9 @@ spec:
     matchLabels: 
       app: worker
   template:
-    metadata: 
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: 'true'
       labels: 
         app: worker
     spec:
