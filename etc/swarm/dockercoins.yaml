@@ -1,0 +1,59 @@
+#########################################################################
+#      Copyright (C) 2020        Sebastian Francisco Colomar Bauza      #
+#      SPDX-License-Identifier:  GPL-2.0-only                           #
+#########################################################################
+networks:
+  hasher:
+    internal: true
+  redis:
+    internal: true
+  rng:
+    internal: true
+services:
+  hasher-svc:
+    deploy:
+      placement:
+        constraints:
+        - node.role == worker
+    image: openshiftacademiaonline/dockercoins-dev:latest-hasher
+    networks:
+      - hasher
+  redis-svc:
+    deploy:
+      placement:
+        constraints:
+        - node.role == worker
+    image: redis:latest
+    networks:
+      - redis
+  rng-svc:
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.role == worker
+    image: openshiftacademiaonline/dockercoins-dev:latest-rng
+    networks:
+      - rng
+  webui-svc:
+    deploy:
+      placement:
+        constraints:
+          - node.role == worker
+    image: openshiftacademiaonline/dockercoins-dev:latest-webui
+    networks:
+      - redis
+    ports:
+      - "8080:8080"
+  worker:
+    deploy:
+      placement:
+        constraints:
+          - node.role == worker
+    image: openshiftacademiaonline/dockercoins-dev:latest-worker
+    networks:
+      - hasher
+      - redis
+      - rng
+version: "3.8"
+#########################################################################
