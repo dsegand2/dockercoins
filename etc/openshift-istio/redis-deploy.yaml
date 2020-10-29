@@ -7,7 +7,9 @@ spec:
     matchLabels: 
       app: redis
   template:
-    metadata: 
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: 'true'
       labels: 
         app: redis
     spec:
