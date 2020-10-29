@@ -1,0 +1,217 @@
+################################################################################
+#      Copyright (C) 2020        Sebastian Francisco Colomar Bauza             #
+#      SPDX-License-Identifier:  GPL-2.0-only                                  #
+################################################################################
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: rng-ds
+spec:
+  selector:
+    matchLabels:
+      label-rng: rng-po
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: 'true'
+      labels:
+        label-rng: rng-po
+    spec:
+      containers:
+      -
+        image: secobau/dockercoins:rng
+        name: rng-container
+        ports:
+          -
+            containerPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hasher-deploy
+spec:
+  selector:
+    matchLabels:
+      label-hasher: hasher-po
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: 'true'
+      labels:
+        label-hasher: hasher-po
+    spec:
+      containers:
+      -
+        image: secobau/dockercoins:hasher
+        name: hasher-container
+        ports:
+          -
+            containerPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-deploy
+spec:
+  selector:
+    matchLabels:
+      label-redis: redis-po
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: 'true'
+      labels:
+        label-redis: redis-po
+    spec:
+      containers:
+      -
+        image: redis
+        name: redis-container
+        ports:
+        -
+          containerPort: 6379
+        volumeMounts:
+        -
+          mountPath: /data
+          name: redis-vol
+      volumes:
+        - 
+          name: redis-vol
+          persistentVolumeClaim:
+            claimName: redis-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redis-pvc
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: gp2
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webui-deploy
+spec:
+  selector:
+    matchLabels:
+      label-webui: webui-po
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: 'true'
+      labels:
+        label-webui: webui-po
+    spec:
+      containers:
+      -
+        image: secobau/dockercoins:webui
+        name: webui-container
+        ports:
+          -
+            containerPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker-deploy
+spec:
+  selector:
+    matchLabels:
+      label-worker: worker-po
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: 'true'
+      labels:
+        label-worker: worker-po
+    spec:
+      containers:
+      -
+        image: secobau/dockercoins:worker
+        name: worker-container
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: webui-gateway
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - 
+      hosts:
+        - "*"
+      port:
+        name: http
+        number: 80
+        protocol: HTTP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hasher
+spec:
+  ports:
+  -
+    port: 8080
+  selector:
+    label-hasher: hasher-po
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+spec:
+  ports:
+  -
+    port: 6379
+  selector:
+    label-redis: redis-po
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rng
+spec:
+  ports:
+  -
+    port: 8080
+  selector:
+    label-rng: rng-po
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webui
+spec:
+  ports:
+  -
+    port: 8080
+  selector:
+    label-webui: webui-po
+---    
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: webui-virtualservice
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - webui-gateway
+  http:
+    - 
+      match:
+        - uri:
+            exact: /index.html
+      route:
+        - destination:
+            host: webui
+            port:
+              number: 8080 
+################################################################################
